@@ -1,9 +1,9 @@
-import { colorsArray } from './lib/colorarray';
-import fs from 'fs';
-import path from 'path';
-const __dirname = path.resolve();
-import inquirer from 'inquirer';
-import { Triangle, Circle, Square } from './lib/shapes.js';
+const colorsArray = require ('./lib/colorarray');
+const fs = require ('fs');
+const path = require ('path');
+//const __dirname = path.resolve();
+const inquirer = require ('inquirer');
+const { Triangle, Circle, Square } = require ('./lib/shapes.js');
 
 const canvasWidth = 300;
 const canvasHeight = 200;
@@ -22,10 +22,10 @@ inquirer
       message: 'Enter the text color (hexadecimal, i.e.#CD5C5C) or keyword (refer to coloursArray.js)):',
       validate: (input) => {
         // check if the input is a valid CSS color name
-        const isColorName = colorsArray.includes(input.toLowerCase());
+        //const isColorName = colorsArray.includes(input.toLowerCase());
         // check if the input is a valid hex color code
         const isHexCode = /^#[0-9A-F]{6}$/i.test(input);
-        return isColorName || isHexCode;
+       // return isColorName || isHexCode;
       },
     },
     {
@@ -40,10 +40,10 @@ inquirer
       message: 'Enter the shape color (hexadecimal or keyword):',
       validate: (input) => {
         // check if the input is a valid CSS color name
-        const isColorName = colorsArray.includes(input.toLowerCase());
+        //const isColorName = colorsArray.includes(input.toLowerCase());
         // check if the input is a valid hex color code
         const isHexCode = /^#[0-9A-F]{6}$/i.test(input);
-        return isColorName || isHexCode;
+       // return isColorName || isHexCode;
       },
     },
   ])
