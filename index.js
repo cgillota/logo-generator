@@ -1,33 +1,37 @@
-const colorsArray = require ('./lib/colorarray');
 const fs = require ('fs');
 const path = require ('path');
-//const __dirname = path.resolve();
 const inquirer = require ('inquirer');
 const { Triangle, Circle, Square } = require ('./lib/shapes.js');
 
-const canvasWidth = 300;
-const canvasHeight = 200;
+class svg{ 
+  constructor(){ 
+    this.textElement = ''
+    this.shapeElement = ''
+  }
+  render (){ 
+    return `<svg version="1.5.2" xmlns="http://www.w3.org/2000/svg" width="300" height="200">${this.shapeElement}${this.textElement}</svg>`
+  }
+  setTextElement(text,color){
+      this.textElement = `<text x="150" y="125" font-size="60" text-anchor="middle" fill="${color}">${text}</text>`
+  }
+  setShapeElement(shape){
+      this.shapeElement = shape.render()
 
-inquirer
-  .prompt([
+  }
+}
+
+const questions =
+[
     {
       type: 'input',
       name: 'text',
-      message: 'Enter up to three characters:',
-      validate: (input) => input.length <= 3,
+      message: 'Enter up to three characters:'
     },
     {
       type: 'input',
       name: 'textColor',
-      message: 'Enter the text color (hexadecimal, i.e.#CD5C5C) or keyword (refer to coloursArray.js)):',
-      validate: (input) => {
-        // check if the input is a valid CSS color name
-        //const isColorName = colorsArray.includes(input.toLowerCase());
-        // check if the input is a valid hex color code
-        const isHexCode = /^#[0-9A-F]{6}$/i.test(input);
-       // return isColorName || isHexCode;
+      message: 'Enter the text color keyword or hexadecimal:',
       },
-    },
     {
       type: 'list',
       name: 'shape',
@@ -37,52 +41,81 @@ inquirer
     {
       type: 'input',
       name: 'shapeColor',
-      message: 'Enter the shape color (hexadecimal or keyword):',
-      validate: (input) => {
-        // check if the input is a valid CSS color name
-        //const isColorName = colorsArray.includes(input.toLowerCase());
-        // check if the input is a valid hex color code
-        const isHexCode = /^#[0-9A-F]{6}$/i.test(input);
-       // return isColorName || isHexCode;
+      message: 'Enter the shape color keyword or hexadecimal:',
+ 
       },
-    },
-  ])
+  ];
 
-  .then((answers) => {
-    let shape;
-    const text = {
-      _attributes: {
-        x: canvasWidth / 2,
-        y: canvasHeight / 1.35, // adjust height of the text, higher # = raise text, this is only for triangle! see 'switch'
-        'text-anchor': 'middle',
-        fill: answers.textColor,
-      },
-      // convert text input to uppercase
-      _text: answers.text.toUpperCase(), 
+  function writeToFile(fileName, data) {
+    console.log("Writing [" + data + "] to file [" + fileName + "]")
+      filesystem.writeFile(fileName, data, function (err) {
+          if (err) {
+              return console.log(err);
+          }
+          console.log("Congratulations, you have Generated a logo.svg!");
+      });
+  }
+  
+  async function init() {
+      console.log("Starting init");
+    var svgString = "";
+    var svg_file = "logo.svg";
+  
+      // Prompt the user for answers
+      const answers = await inquirer.prompt(questions);
+  
+    //user text
+    var user_text = "";
+    if (answers.text.length > 0 && answers.text.length < 4) {
+      // 1-3 chars, valid entry
+      user_text = answers.text;
+    } else {
+      // 0 or 4+ chars, invalid entry
+      console.log("Invalid user text field detected! Please enter 1-3 Characters, no more and no less");
+          return;
+    }
+    console.log("User text: [" + user_text + "]");
+    //user font color
+    user_font_color = answers["text-color"];
+    console.log("User font color: [" + user_font_color + "]");
+    //user shape color
+    user_shape_color = answers.shape;
+    console.log("User shape color: [" + user_shape_color + "]");
+    //user shape type
+    user_shape_type = answers["pixel-image"];
+    console.log("User entered shape = [" + user_shape_type + "]");
     
-      render: function() { 
-        return ` 
-          <text x="${this._attributes.x}" y="${this._attributes.y}" 
-                text-anchor="${this._attributes['text-anchor']}"
-                fill="${this._attributes.fill}" font-size="${fontSize}">
-            ${this._text}
-          </text>
-        `;
-      },
-    };
+    //user shape
+    let user_shape;
+    if (user_shape_type === "Square" || user_shape_type === "square") {
+      user_shape = new Square();
+      console.log("User selected Square shape");
+    }
+    else if (user_shape_type === "Circle" || user_shape_type === "circle") {
+      user_shape = new Circle();
+      console.log("User selected Circle shape");
+    }
+    else if (user_shape_type === "Triangle" || user_shape_type === "triangle") {
+      user_shape = new Triangle();
+      console.log("User selected Triangle shape");
+    }
+    else {
+      console.log("Invalid shape!");
+    }
+    user_shape.setColor(user_shape_color);
+  
+    // Create a new Svg instance and add the shape and text elements to it
+    const svg = new svg();
+    svg.setTextElement(user_text, user_font_color);
+    svg.setShapeElement(user_shape);
+    svgString = svg.render();
     
-
-    const svgData = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="${canvasWidth}" height="${canvasHeight}">
-        ${shape.render(answers.shapeColor)}
-        ${text.render()}
-      </svg>`;
-
-    fs.writeFileSync(`${__dirname}/logo.svg`, svgData.toString());
-
-    console.log('Generated logo.svg');
-  })
-  .catch((error) => {
-    console.error(error);
-  });
-
+    //Print shape to log
+    console.log("Displaying shape:\n\n" + svgString);
+    //document.getElementById("svg_image").innerHTML = svgString;
+  
+    console.log("Shape generation complete!");
+    console.log("Writing shape to file...");
+    writeToFile(svg_file, svgString); 
+  }
+  init()
