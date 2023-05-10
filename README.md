@@ -4,6 +4,8 @@
   ## Description
    
   Fast and easy to make a new log for what ever your needs 
+  
+  Video Demo Link : https://drive.google.com/file/d/15MrvCHw1HUHHvJb8t244rOEhLVdjkI53/view 
 
   ## Table of Contents
   *[Installation](#installation)
