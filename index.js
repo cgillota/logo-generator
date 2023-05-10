@@ -1,15 +1,14 @@
 const fs = require ('fs');
-const path = require ('path');
 const inquirer = require ('inquirer');
-const { Triangle, Circle, Square } = require ('./lib/shapes.js');
+const { Triangle, Circle, Square } = require('./lib/shapes');
 
-class svg{ 
+class Svg{ 
   constructor(){ 
     this.textElement = ''
     this.shapeElement = ''
   }
   render (){ 
-    return `<svg version="1.5.2" xmlns="http://www.w3.org/2000/svg" width="300" height="200">${this.shapeElement}${this.textElement}</svg>`
+    return `<svg version="1.5.2" width="300" height="200">${this.shapeElement}${this.textElement}</svg>`
   }
   setTextElement(text,color){
       this.textElement = `<text x="150" y="125" font-size="60" text-anchor="middle" fill="${color}">${text}</text>`
@@ -48,7 +47,7 @@ const questions =
 
   function writeToFile(fileName, data) {
     console.log("Writing [" + data + "] to file [" + fileName + "]")
-      filesystem.writeFile(fileName, data, function (err) {
+      fs.writeFile(fileName, data, function (err) {
           if (err) {
               return console.log(err);
           }
@@ -74,15 +73,16 @@ const questions =
       console.log("Invalid user text field detected! Please enter 1-3 Characters, no more and no less");
           return;
     }
+    user_text = answers.text;
     console.log("User text: [" + user_text + "]");
     //user font color
-    user_font_color = answers["text-color"];
+    user_font_color = answers["textColor"];
     console.log("User font color: [" + user_font_color + "]");
     //user shape color
-    user_shape_color = answers.shape;
+    user_shape_color = answers.shapeColor;
     console.log("User shape color: [" + user_shape_color + "]");
     //user shape type
-    user_shape_type = answers["pixel-image"];
+    user_shape_type = answers["shape"];
     console.log("User entered shape = [" + user_shape_type + "]");
     
     //user shape
@@ -105,7 +105,7 @@ const questions =
     user_shape.setColor(user_shape_color);
   
     // Create a new Svg instance and add the shape and text elements to it
-    const svg = new svg();
+    const svg = new Svg();
     svg.setTextElement(user_text, user_font_color);
     svg.setShapeElement(user_shape);
     svgString = svg.render();
